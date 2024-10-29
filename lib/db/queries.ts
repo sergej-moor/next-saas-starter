@@ -1,11 +1,12 @@
-import { desc, and, eq, isNull } from 'drizzle-orm';
-import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
-import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth/session';
+import { desc, and, eq, isNull } from "drizzle-orm";
+import { db } from "./drizzle";
+import { activityLogs, teamMembers, teams, users, projects } from "./schema";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/session";
 
 export async function getUser() {
-  const sessionCookie = cookies().get('session');
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("session");
   if (!sessionCookie || !sessionCookie.value) {
     return null;
   }
@@ -14,7 +15,7 @@ export async function getUser() {
   if (
     !sessionData ||
     !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
+    typeof sessionData.user.id !== "number"
   ) {
     return null;
   }
@@ -81,7 +82,7 @@ export async function getUserWithTeam(userId: number) {
 export async function getActivityLogs() {
   const user = await getUser();
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   return await db
@@ -126,4 +127,35 @@ export async function getTeamForUser(userId: number) {
   });
 
   return result?.teamMembers[0]?.team || null;
+}
+
+export async function getProjectsForUser() {
+  const user = await getUser();
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  return await db
+    .select({
+      id: projects.id,
+      name: projects.name,
+      settings: projects.settings,
+    })
+    .from(projects)
+    .leftJoin(users, eq(projects.userId, users.id))
+    .where(eq(projects.userId, users.id))
+    .limit(10);
+}
+
+export async function getProject(id: string) {
+  const project = await db.query.projects.findFirst({
+    where: eq(projects.id, id),
+    columns: {
+      id: true,
+      name: true,
+      settings: true,
+    },
+  });
+
+  return project;
 }

@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut } from 'lucide-react';
+import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { CircleIcon, Home, LogOut, Torus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useUser } from '@/lib/auth';
-import { signOut } from '@/app/(login)/actions';
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUser } from "@/lib/auth";
+import { signOut } from "@/app/(login)/actions";
+import { useRouter } from "next/navigation";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,20 +23,20 @@ function Header() {
   async function handleSignOut() {
     setUser(null);
     await signOut();
-    router.push('/');
+    router.push("/");
   }
 
   return (
-    <header className="border-b border-gray-200">
+    <header className="border-b border-[#CADD57] bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <CircleIcon className="h-6 w-6 text-orange-500" />
-          <span className="ml-2 text-xl font-semibold text-gray-900">ACME</span>
+        <Link href="/" className="flex items-center ">
+          {/* <Torus className="h-6 w-6 text-[#CADD57]" /> */}
+          <span className="ml-1 text-xl font-bold ">Dimensio</span>
         </Link>
         <div className="flex items-center space-x-4">
           <Link
             href="/pricing"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
+            className="text-sm font-medium hover:text-gray-900"
           >
             Pricing
           </Link>
@@ -44,20 +44,26 @@ function Header() {
             <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer size-9">
-                  <AvatarImage alt={user.name || ''} />
+                  <AvatarImage alt={user.name || ""} />
                   <AvatarFallback>
                     {user.email
-                      .split(' ')
+                      .split(" ")
                       .map((n) => n[0])
-                      .join('')}
+                      .join("")}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="p-0">
                 <DropdownMenuItem className="w-full cursor-pointer m-1">
+                  <Link href="/projects" className="flex w-full items-center">
+                    <Home className="mr-2 h-4 w-4" />
+                    <span>Projects</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="w-full cursor-pointer m-1">
                   <Link href="/dashboard" className="flex w-full items-center">
                     <Home className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
+                    <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
                 <form action={handleSignOut} className="p-1">
